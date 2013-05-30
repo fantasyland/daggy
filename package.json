@@ -1,0 +1,20 @@
+{
+  "name": "daggy",
+  "version": "0.0.0",
+  "description": "Library for creating tagged constructors.",
+  "main": "daggy.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/puffnfresh/daggy.git"
+  },
+  "keywords": [
+    "constructor"
+  ],
+  "author": "Brian McKenna",
+  "license": "MIT",
+  "readmeFilename": "README.md",
+  "devDependencies": {
+    "emu": "0.0.2"
+  }
+}
