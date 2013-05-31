@@ -15,6 +15,8 @@
         factory(global.daggy);
     }
 })(this, function(exports) {
+    'use strict';
+
     function create(proto) {
         function Ctor() {}
         Ctor.prototype = proto;
