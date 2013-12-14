@@ -2,24 +2,6 @@
 
 Library for creating tagged constructors.
 
-## `daggy.getInstance(self, constructor)`
-
-Returns `self` if it's an `instanceof constructor`, otherwise
-creates a new object with `constructor`'s prototype.
-
-Allows creating constructors that can be used with or without
-the new keyword but always have the correct prototype.
-
-```javascript
-function WrappedArray() {
-    var self = daggy.getInstance(this, WrappedArray);
-    self._array = [].slice.apply(arguments);
-    return self;
-}
-new WrappedArray(1, 2, 3) instanceof WrappedArray; // true
-WrappedArray(1, 2, 3) instanceof WrappedArray; // true
-```
-
 ## `daggy.tagged(arguments)`
 
 Creates a new constructor with the given field names as

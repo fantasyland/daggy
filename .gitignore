@@ -1,1 +1,7 @@
+*.log
+.DS_Store
+bin
+coverage
+docs
 node_modules
+tags

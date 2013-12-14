@@ -1,9 +1,6 @@
 {
   "name": "daggy",
-  "version": "0.0.1",
   "description": "Library for creating tagged constructors.",
-  "main": "daggy.js",
-  "scripts": {},
   "repository": {
     "type": "git",
     "url": "git://github.com/puffnfresh/daggy.git"
@@ -14,7 +11,20 @@
   "author": "Brian McKenna",
   "license": "MIT",
   "readmeFilename": "README.md",
+  "dependencies": {
+    "fantasy-helpers": "0.0.x"
+  },
   "devDependencies": {
-    "emu": "0.0.2"
-  }
+    "emu": "0.0.2",
+    "grunt-cli": "0.1.9",
+    "grunt": "0.4.x",
+    "grunt-contrib-jshint": "0.6.x",
+    "grunt-contrib-nodeunit": "0.2.0"
+  },
+  "scripts": {
+      "test": "grunt"
+  },
+  "files": ["daggy.js", "src/*.js"],
+  "main": "daggy.js",
+  "version": "0.0.2"
 }
