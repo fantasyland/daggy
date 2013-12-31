@@ -66,7 +66,8 @@ function tagged() {
   ```
 **/
 function taggedSum(constructors) {
-    var key;
+    var key,
+        ctor;
 
     function definitions() {
         throw new TypeError('Tagged sum was called instead of one of its properties.');
@@ -99,8 +100,10 @@ function taggedSum(constructors) {
             definitions[key] = makeProto(key);
             continue;
         }
-        definitions[key] = tagged.apply(null, constructors[key]);
+        ctor = tagged.apply(null, constructors[key]);
+        definitions[key] = ctor;
         definitions[key].prototype = makeProto(key);
+        definitions[key].prototype.constructor = ctor;
     }
 
     return definitions;

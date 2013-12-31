@@ -3,6 +3,10 @@ var daggy = require('../daggy'),
         Cons: ['head', 'tail'],
         Nil: []
     }),
+    Type = daggy.taggedSum({
+        X: ['x'],
+        Y: ['y']
+    }),
     identity = function(a) {
         return a;
     },
@@ -126,4 +130,33 @@ exports.taggedSum = {
         test.equal(actual, 'nil');
         test.done();
     },
+    'when using constructor property of an instance should create a instance': function(test) {
+        var a = Math.random(),
+            x = List.Cons(a, List.Nil),
+            y = x.constructor(a, List.Nil);
+
+        test.equal(x.head, y.head);
+        test.done();
+    },
+    'when using instanceof should be Type': function(test) {
+        var a = Math.random(),
+            x = Type.X(a);
+
+        test.ok(x instanceof Type);
+        test.done();
+    },
+    'when using instanceof should be Type.X': function(test) {
+        var a = Math.random(),
+            x = Type.X(a);
+
+        test.ok(x instanceof Type.X);
+        test.done();
+    },
+    'when using instanceof should not be Type.Y': function(test) {
+        var a = Math.random(),
+            x = Type.X(a);
+
+        test.ok(!(x instanceof Type.Y));
+        test.done();
+    }
 };
