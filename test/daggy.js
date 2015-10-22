@@ -36,6 +36,13 @@ exports.tagged = {
         test.equal(daggy.tagged('a', 'b')(a, b).b, b);
         test.done();
     },
+    'when creating a tagged type toString shout return correct value': function(test) {
+        var a = Math.random(),
+            b = Math.random();
+
+        test.equal(daggy.tagged('a', 'b')(a, b).toString(), '(' + a + ', ' + b + ')');
+        test.done();
+    },
     'when creating a tagged type with to many arguments throws correct error': function(test) {
         var a = Math.random(),
             b = Math.random(),
@@ -85,11 +92,25 @@ exports.taggedSum = {
         test.equal(list.head, a);
         test.done();
     },
+    'when checking head toString on value should return correct value': function(test) {
+        var a = Math.random(),
+            list = List.Cons(a, List.Nil);
+
+        test.equal(list.toString(), '(' + a + ', ())');
+        test.done();
+    },
     'when checking tail value should return correct value': function(test) {
         var a = Math.random(),
             list = List.Cons(a, List.Nil);
 
         test.equal(list.tail, List.Nil);
+        test.done();
+    },
+    'when checking tail toString on value should return correct value': function(test) {
+        var a = Math.random(),
+            list = List.Nil;
+
+        test.equal(list.toString(), '()');
         test.done();
     },
     'when checking cata without all properties throws correct error': function(test) {

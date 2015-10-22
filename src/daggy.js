@@ -17,6 +17,15 @@ var λ = require('fantasy-helpers');
 **/
 function tagged() {
     var fields = [].slice.apply(arguments);
+
+    function toString(args) {
+      var x = [].slice.apply(args);
+      return function() {
+        var values = x.map(function(y) { return y.toString(); });
+        return '(' + values.join(', ') + ')';
+      };
+    }
+    
     function wrapped() {
         var self = λ.getInstance(this, wrapped),
             i;
@@ -26,6 +35,8 @@ function tagged() {
 
         for(i = 0; i < fields.length; i++)
             self[fields[i]] = arguments[i];
+
+        self.toString = toString(arguments);
 
         return self;
     }
@@ -95,9 +106,14 @@ function taggedSum(constructors) {
         return proto;
     }
 
+    function constant(x) {
+      return function() { return x; };
+    }
+
     for(key in constructors) {
         if(!constructors[key].length) {
             definitions[key] = makeProto(key);
+            definitions[key].toString = constant('()');
             continue;
         }
         ctor = tagged.apply(null, constructors[key]);
