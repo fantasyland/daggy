@@ -1,4 +1,5 @@
-var λ = require('fantasy-helpers');
+const {create, getInstance} = require('fantasy-helpers');
+const {constant} = require('fantasy-combinators');
 
 /**
   ## `daggy.tagged(arguments)`
@@ -8,27 +9,27 @@ var λ = require('fantasy-helpers');
   returned constructor.
 
   ```javascript
-  var Tuple3 = daggy.tagged('x', 'y', 'z');
+  const Tuple3 = daggy.tagged('x', 'y', 'z');
 
-  var _123 = Tuple3(1, 2, 3); // optional new keyword
+  const _123 = Tuple3(1, 2, 3); // optional new keyword
   _123.x == 1 && _123.y == 2 && _123.z == 3; // true
   _123 instanceof Tuple3; // true
   ```
 **/
 function tagged() {
-    var fields = [].slice.apply(arguments);
+    const fields = [].slice.apply(arguments);
 
     function toString(args) {
-      var x = [].slice.apply(args);
-      return function() {
-        var values = x.map(function(y) { return y.toString(); });
+      const x = [].slice.apply(args);
+      return () => {
+        const values = x.map((y) => y.toString());
         return '(' + values.join(', ') + ')';
       };
     }
-    
+
     function wrapped() {
-        var self = λ.getInstance(this, wrapped),
-            i;
+        const self = getInstance(this, wrapped);
+        var i;
 
         if(arguments.length != fields.length)
             throw new TypeError('Expected ' + fields.length + ' arguments, got ' + arguments.length);
@@ -53,7 +54,7 @@ function tagged() {
   function.
 
   ```javascript
-  var Option = daggy.taggedSum({
+  const Option = daggy.taggedSum({
       Some: ['x'],
       None: []
   });
@@ -77,7 +78,7 @@ function tagged() {
   ```
 **/
 function taggedSum(constructors) {
-    var key,
+    var key, 
         ctor;
 
     function definitions() {
@@ -85,10 +86,12 @@ function taggedSum(constructors) {
     }
 
     function makeCata(key) {
+        // Note: we need the prototype from this function.
         return function(dispatches) {
-            var fields = constructors[key],
-                args = [],
-                i;
+            var i;
+
+            const fields = constructors[key];
+            const args = [];
 
             if(!dispatches[key])
                 throw new TypeError("Constructors given to cata didn't include: " + key);
@@ -101,13 +104,9 @@ function taggedSum(constructors) {
     }
 
     function makeProto(key) {
-        var proto = λ.create(definitions.prototype);
+        const proto = create(definitions.prototype);
         proto.cata = makeCata(key);
         return proto;
-    }
-
-    function constant(x) {
-      return function() { return x; };
     }
 
     for(key in constructors) {
@@ -125,7 +124,4 @@ function taggedSum(constructors) {
     return definitions;
 }
 
-exports = module.exports = {
-    tagged: tagged,
-    taggedSum: taggedSum
-};
+exports = module.exports = {tagged, taggedSum};

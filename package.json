@@ -12,7 +12,8 @@
   "license": "MIT",
   "readmeFilename": "README.md",
   "dependencies": {
-    "fantasy-helpers": "0.0.x"
+    "fantasy-helpers": "0.0.x",
+    "fantasy-combinators": "0.0.x"
   },
   "devDependencies": {
     "emu": "0.0.2",
@@ -22,7 +23,7 @@
     "grunt-contrib-nodeunit": "0.2.0"
   },
   "scripts": {
-      "test": "grunt"
+      "test": "node --harmony_destructuring node_modules/grunt-contrib-nodeunit/node_modules/.bin/nodeunit test/*.js"
   },
   "files": ["daggy.js", "src/*.js"],
   "main": "daggy.js",
