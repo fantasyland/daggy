@@ -1,4 +1,4 @@
-const {create, getInstance} = require('fantasy-helpers');
+const getInstance = require('fantasy-helpers/src/get-instance');
 const {constant} = require('fantasy-combinators');
 
 /**
@@ -78,7 +78,7 @@ function tagged() {
   ```
 **/
 function taggedSum(constructors) {
-    var key, 
+    var key,
         ctor;
 
     function definitions() {
@@ -104,7 +104,7 @@ function taggedSum(constructors) {
     }
 
     function makeProto(key) {
-        const proto = create(definitions.prototype);
+        const proto = Object.create(definitions.prototype);
         proto.cata = makeCata(key);
         return proto;
     }
