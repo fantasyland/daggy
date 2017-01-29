@@ -5,44 +5,44 @@ Library for creating tagged constructors.
 ## `daggy.tagged(arguments)`
 
 Creates a new constructor with the given field names as
-arguments and properties. Allows `instanceof` checks with
+arguments and properties. Allows `TypeRep.is` checks with
 returned constructor.
 
 ```javascript
-var Tuple3 = daggy.tagged('x', 'y', 'z');
+const Tuple3 = daggy.tagged('Tuple3', ['x', 'y', 'z'])
 
-var _123 = Tuple3(1, 2, 3); // optional new keyword
-_123.x == 1 && _123.y == 2 && _123.z == 3; // true
-_123 instanceof Tuple3; // true
+const _123 = Tuple3(1, 2, 3)
+_123.x == 1 && _123.y == 2 && _123.z == 3 // true
+Tuple3.is(_123) // true
 ```
 
 ## `daggy.taggedSum(constructors)`
 
 Creates a constructor for each key in `constructors`. Returns a
 function with each constructor as a property. Allows
-`instanceof` checks for each constructor and the returned
-function.
+`TypeRep.is` and `TypeRep.Tag.is` checks for values created by constructors
 
 ```javascript
-var Option = daggy.taggedSum({
+const Option = daggy.taggedSum({
     Some: ['x'],
     None: []
-});
+})
 
-Option.Some(1) instanceof Option.Some; // true
-Option.Some(1) instanceof Option; // true
-Option.None instanceof Option; // true
+Option.Some.is(Option.Some(1)) // true
+Option.None.is(Option.None) // true
+Option.is(Option.Some(1)) // true
+Option.is(Option.None) // true
 
 function incOrZero(o) {
     return o.cata({
         Some: function(x) {
-            return x + 1;
+            return x + 1
         },
         None: function() {
-            return 0;
+            return 0
         }
-    });
+    })
 }
-incOrZero(Option.Some(1)); // 2
-incOrZero(Option.None); // 0
+incOrZero(Option.Some(1)) // 2
+incOrZero(Option.None) // 0
 ```

@@ -12,20 +12,23 @@
   "license": "MIT",
   "readmeFilename": "README.md",
   "dependencies": {
-    "fantasy-helpers": "0.0.x",
-    "fantasy-combinators": "0.0.x"
+    "sanctuary-type-classes": "3.0.0",
+    "sanctuary-type-identifiers": "1.0.0"
   },
   "devDependencies": {
-    "emu": "0.0.2",
-    "grunt-cli": "0.1.9",
-    "grunt": "0.4.x",
-    "grunt-contrib-jshint": "0.6.x",
-    "grunt-contrib-nodeunit": "0.2.0"
+    "fantasy-combinators": "0.0.x",
+    "standard": "8.6.0",
+    "tap": "10.0.0"
   },
   "scripts": {
-      "test": "node --harmony_destructuring node_modules/grunt-contrib-nodeunit/node_modules/.bin/nodeunit test/*.js"
+    "lint": "standard src/*.js test/*.js",
+    "lint:fix": "standard --fix src/*.js test/*.js",
+    "test": "tap -R tap test/*.js",
+    "check": "npm run lint && npm run test"
   },
-  "files": ["daggy.js", "src/*.js"],
-  "main": "daggy.js",
-  "version": "0.0.2"
+  "files": [
+    "src/*.js"
+  ],
+  "main": "src/daggy.js",
+  "version": "1.0.0"
 }

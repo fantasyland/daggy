@@ -1,127 +1,124 @@
-const getInstance = require('fantasy-helpers/src/get-instance');
-const {constant} = require('fantasy-combinators');
+const { toString } = require('sanctuary-type-classes')
+const type = require('sanctuary-type-identifiers')
 
-/**
-  ## `daggy.tagged(arguments)`
-
-  Creates a new constructor with the given field names as
-  arguments and properties. Allows `instanceof` checks with
-  returned constructor.
-
-  ```javascript
-  const Tuple3 = daggy.tagged('x', 'y', 'z');
-
-  const _123 = Tuple3(1, 2, 3); // optional new keyword
-  _123.x == 1 && _123.y == 2 && _123.z == 3; // true
-  _123 instanceof Tuple3; // true
-  ```
-**/
-function tagged() {
-    const fields = [].slice.apply(arguments);
-
-    function toString(args) {
-      const x = [].slice.apply(args);
-      return () => {
-        const values = x.map((y) => y.toString());
-        return '(' + values.join(', ') + ')';
-      };
-    }
-
-    function wrapped() {
-        const self = getInstance(this, wrapped);
-        var i;
-
-        if(arguments.length != fields.length)
-            throw new TypeError('Expected ' + fields.length + ' arguments, got ' + arguments.length);
-
-        for(i = 0; i < fields.length; i++)
-            self[fields[i]] = arguments[i];
-
-        self.toString = toString(arguments);
-
-        return self;
-    }
-    wrapped._length = fields.length;
-    return wrapped;
+const tagged = (typeName, fields) => {
+  const proto = {}
+  proto.toString = tagged$objToString
+  const typeRep = (...args) => tagged$makeValue(typeRep, fields, args)
+  Object.assign(typeRep, {
+    toString: typeRepToString,
+    prototype: proto,
+    is: isType,
+    '@@type': typeName
+  })
+  proto.constructor = typeRep
+  return typeRep
 }
 
-/**
-  ## `daggy.taggedSum(constructors)`
-
-  Creates a constructor for each key in `constructors`. Returns a
-  function with each constructor as a property. Allows
-  `instanceof` checks for each constructor and the returned
-  function.
-
-  ```javascript
-  const Option = daggy.taggedSum({
-      Some: ['x'],
-      None: []
-  });
-
-  Option.Some(1) instanceof Option.Some; // true
-  Option.Some(1) instanceof Option; // true
-  Option.None instanceof Option; // true
-
-  function incOrZero(o) {
-      return o.cata({
-          Some: function(x) {
-              return x + 1;
-          },
-          None: function() {
-              return 0;
-          }
-      });
+// [1] - possible other names are: `hasInstance`, `isVariant`
+// [2] - it might not be the best choise to also define is on value as
+//       user could use `===` as there should only be one such value.
+const taggedSum = (typeName, definitions) => {
+  const proto = {}
+  proto.cata = cata
+  proto.toString = objToString
+  const typeRep = {
+    toString: typeRepToString,
+    prototype: proto,
+    is: isType, // [1]
+    '@@union': definitions,
+    '@@type': typeName
   }
-  incOrZero(Option.Some(1)); // 2
-  incOrZero(Option.None); // 0
-  ```
-**/
-function taggedSum(constructors) {
-    var key,
-        ctor;
-
-    function definitions() {
-        throw new TypeError('Tagged sum was called instead of one of its properties.');
+  proto.constructor = typeRep
+  Object.keys(definitions).forEach(tag => {
+    if (definitions[tag].length === 0) {
+      typeRep[tag] = makeValue(typeRep, tag, [])
+      typeRep[tag].is = isUnitValue // [1,2]
+      return
     }
-
-    function makeCata(key) {
-        // Note: we need the prototype from this function.
-        return function(dispatches) {
-            var i;
-
-            const fields = constructors[key];
-            const args = [];
-
-            if(!dispatches[key])
-                throw new TypeError("Constructors given to cata didn't include: " + key);
-
-            for(i = 0; i < fields.length; i++)
-                args.push(this[fields[i]]);
-
-            return dispatches[key].apply(this, args);
-        };
-    }
-
-    function makeProto(key) {
-        const proto = Object.create(definitions.prototype);
-        proto.cata = makeCata(key);
-        return proto;
-    }
-
-    for(key in constructors) {
-        if(!constructors[key].length) {
-            definitions[key] = makeProto(key);
-            definitions[key].toString = constant('()');
-            continue;
-        }
-        ctor = tagged.apply(null, constructors[key]);
-        definitions[key] = ctor;
-        definitions[key].prototype = makeProto(key);
-        definitions[key].prototype.constructor = ctor;
-    }
-
-    return definitions;
+    typeRep[tag] = (...args) => makeValue(typeRep, tag, args)
+    typeRep[tag].is = isVariant // [1]
+    typeRep[tag]['@@tag'] = tag
+    typeRep[tag]['@@typeRep'] = typeRep
+    typeRep[tag].toString = constructorToString
+  })
+  return typeRep
 }
 
-exports = module.exports = {tagged, taggedSum};
+const tagged$objToString = function () {
+  return `${this.constructor['@@type']}(${
+    this['@@values'].map(a => toString(a)).join(', ')
+  })`
+}
+
+const tagged$makeValue = (typeRep, fields, values) => {
+  if (values.length !== fields.length) {
+    throw new TypeError(`Expected ${fields.length} arguments, got ${values.length}`)
+  }
+  const obj = Object.create(typeRep.prototype)
+  obj['@@values'] = values
+  for (let idx = 0; idx < fields.length; idx++) {
+    obj[fields[idx]] = values[idx]
+  }
+  return obj
+}
+
+const cata = function (fs) {
+  const union = this.constructor['@@union']
+  for (let tag in union) {
+    if (union.hasOwnProperty(tag) && typeof fs[tag] !== 'function') {
+      throw new Error(`Constructors given to cata didn't include: ${tag}`)
+    }
+  }
+  return fs[this['@@tag']].apply(fs, this['@@values'])
+}
+
+const makeValue = (typeRep, tag, values) => {
+  const fields = typeRep['@@union'][tag]
+  if (values.length !== fields.length) {
+    throw new TypeError(`Expected ${fields.length} arguments, got ${values.length}`)
+  }
+  const obj = Object.create(typeRep.prototype)
+  obj['@@values'] = values
+  obj['@@tag'] = tag
+  for (let idx = 0; idx < fields.length; idx++) {
+    obj[fields[idx]] = values[idx]
+  }
+  return obj
+}
+
+const typeRepToString = function () {
+  return this['@@type']
+}
+
+const constructorToString = function () {
+  return `${this['@@typeRep']['@@type']}.${this['@@tag']}`
+}
+
+const objToString = function () {
+  return `${this.constructor['@@type']}.${this['@@tag']}(${
+    this['@@values'].map(a => toString(a)).join(', ')
+  })`
+}
+
+const isType = function (val) {
+  return Boolean(val) &&
+    this['@@type'] === type(val)
+}
+
+const isVariant = function (val) {
+  return Boolean(val) &&
+    this['@@tag'] === val['@@tag'] &&
+    this['@@typeRep']['@@type'] === type(val)
+}
+
+const isUnitValue = function (val) {
+  return this === val || Boolean(val) &&
+    this['@@tag'] === val['@@tag'] &&
+    type(this) === type(val)
+}
+
+module.exports = {
+  taggedSum,
+  tagged
+}

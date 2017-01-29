@@ -1,182 +1,83 @@
-const daggy = require('../daggy');
+const { toString } = require('sanctuary-type-classes')
+const { test } = require('tap')
+const { tagged, taggedSum } = require('../src/daggy')
 
-const {constant, identity} = require('fantasy-combinators');
+const Tuple = tagged('Tuple', ['_1', '_2'])
 
-const List = daggy.taggedSum({
-    Cons: ['head', 'tail'],
-    Nil: []
-});
-const Type = daggy.taggedSum({
-    X: ['x'],
-    Y: ['y']
-});
+const List = taggedSum('List', {
+  Cons: ['x', 'xs'],
+  Nil: []
+})
 
-function error(a) {
-    return () => {
-        throw new Error(a);
-    };
-};
+Tuple.prototype.foo = 'foo'
+List.prototype.foo = 'foo'
 
-exports.tagged = {
-    'when creating a tagged type, should return correct first value': function(test) {
-        const a = Math.random();
-        const b = Math.random();
+const a = 'a'
+const b = 'b'
 
-        test.equal(daggy.tagged('a', 'b')(a, b).a, a);
-        test.done();
-    },
-    'when creating a tagged type, should return correct second value': function(test) {
-        const a = Math.random();
-        const b = Math.random();
+test('tagged', (t) => {
+  const tpl = Tuple(a, b)
+  t.throws(
+    () => { Tuple(1) },
+    new TypeError(`Expected 2 arguments, got 1`),
+    'when creating a tagged type with fewer arguments throws error'
+  )
+  t.throws(
+    () => { Tuple(1, 2, 3) },
+    new TypeError(`Expected 2 arguments, got 3`),
+    'when creating a tagged type with too many arguments throws error'
+  )
+  t.same(tpl.toString(), `Tuple(${toString(a)}, ${toString(b)})`, 'toString on value should work')
+  t.same(Tuple.toString(), `Tuple`, 'toString on type should work')
+  t.same(tpl._1, a, 'when checking _1 value should return correct value')
+  t.same(tpl._2, b, 'when checking _2 value should return correct value')
+  t.same(tpl.constructor, Tuple, 'constructor on value should refer to TypeRep of the value')
+  t.ok(Tuple.is(tpl), '`is` on type works')
+  t.notOk(Tuple.is({}), '`is` on type works')
+  t.same(Tuple.prototype.foo, tpl.foo, 'values in typerep.prototype are accassible from instance values')
+  t.end()
+})
 
-        test.equal(daggy.tagged('a', 'b')(a, b).b, b);
-        test.done();
-    },
-    'when creating a tagged type toString shout return correct value': function(test) {
-        const a = Math.random();
-        const b = Math.random();
+test('taggedSum', (t) => {
+  const list = List.Cons(a, List.Nil)
 
-        test.equal(daggy.tagged('a', 'b')(a, b).toString(), '(' + a + ', ' + b + ')');
-        test.done();
-    },
-    'when creating a tagged type with to many arguments throws correct error': function(test) {
-        var msg = '';
-
-        const a = Math.random();
-        const b = Math.random();
-        const t = daggy.tagged('a');
-
-        try {
-            t(a, b);
-        } catch(e) {
-            msg = e.message;
-        }
-
-        test.equal(msg, 'Expected 1 arguments, got 2');
-        test.done();
-    },
-    'when creating a tagged type with to few arguments throws correct error': function(test) {
-        var msg = '';
-
-        const a = Math.random();
-        const b = Math.random();
-        const t = daggy.tagged('a', 'b', 'c');
-        
-        try {
-            t(a, b);
-        } catch(e) {
-            msg = e.message;
-        }
-        test.equal(msg, 'Expected 3 arguments, got 2');
-        test.done();
-    }
-};
-
-exports.taggedSum = {
-    'when creating a taggedSum and calling definition should throw correct value': function(test) {
-        var msg = '';
-        try {
-            List();
-        } catch(e) {
-            msg = e.message;
-        }
-        test.ok(msg === 'Tagged sum was called instead of one of its properties.');
-        test.done();
-    },
-    'when checking head value should return correct value': function(test) {
-        const a = Math.random();
-        const list = List.Cons(a, List.Nil);
-
-        test.equal(list.head, a);
-        test.done();
-    },
-    'when checking head toString on value should return correct value': function(test) {
-        const a = Math.random();
-        const list = List.Cons(a, List.Nil);
-
-        test.equal(list.toString(), '(' + a + ', ())');
-        test.done();
-    },
-    'when checking tail value should return correct value': function(test) {
-        const a = Math.random();
-        const list = List.Cons(a, List.Nil);
-
-        test.equal(list.tail, List.Nil);
-        test.done();
-    },
-    'when checking tail toString on value should return correct value': function(test) {
-        const a = Math.random();
-        const list = List.Nil;
-
-        test.equal(list.toString(), '()');
-        test.done();
-    },
-    'when checking cata without all properties throws correct error': function(test) {
-        var msg = '';
-
-        const a = Math.random();
-        const list = List.Cons(a, List.Nil);
-
-        try {
-            list.cata({
-                Nil: error('Failed if called')
-            });
-        } catch(e) {
-            msg = e.message;
-        }
-
-        test.equal(msg, 'Constructors given to cata didn\'t include: Cons');
-        test.done();
-    },
-    'when checking cata with first tagged value should return correct value': function(test) {
-        const a = Math.random();
-        const list = List.Cons(a, List.Nil);
-        const actual = list.cata({
-            Cons: identity,
-            Nil: error('Failed if called')
-        });
-
-        test.equal(actual, a);
-        test.done();
-    },
-    'when checking cata with second tagged value should return correct value': function(test) {
-        const a = Math.random();
-        const list = List.Nil;
-        const actual = list.cata({
-            Cons: error('Failed if called'),
-            Nil: constant('nil')
-        });
-
-        test.equal(actual, 'nil');
-        test.done();
-    },
-    'when using constructor property of an instance should create a instance': function(test) {
-        const a = Math.random();
-        const x = List.Cons(a, List.Nil);
-        const y = x.constructor(a, List.Nil);
-
-        test.equal(x.head, y.head);
-        test.done();
-    },
-    'when using instanceof should be Type': function(test) {
-        const a = Math.random();
-        const x = Type.X(a);
-
-        test.ok(x instanceof Type);
-        test.done();
-    },
-    'when using instanceof should be Type.X': function(test) {
-        const a = Math.random();
-        const x = Type.X(a);
-
-        test.ok(x instanceof Type.X);
-        test.done();
-    },
-    'when using instanceof should not be Type.Y': function(test) {
-        const a = Math.random();
-        const x = Type.X(a);
-
-        test.ok(!(x instanceof Type.Y));
-        test.done();
-    }
-};
+  t.throws(
+    () => { List.Cons(1) },
+    new TypeError(`Expected 2 arguments, got 1`),
+    'when creating a taggedSum type with to many arguments throws error'
+  )
+  t.throws(
+    () => { List.Cons(1, 1, 1) },
+    new TypeError(`Expected 2 arguments, got 3`),
+    'when creating a taggedSum type with to many arguments throws error'
+  )
+  t.throws(
+    () => { list.cata({ Cons: (a, b) => a }) },
+    new Error(`Constructors given to cata didn't include: Nil`),
+    'throws if all cases are not handled'
+  )
+  t.same(list.toString(), `List.Cons(${toString(a)}, List.Nil())`, 'toString on value should work')
+  t.same(List.toString(), 'List', 'toString on type should work')
+  t.same(List.Cons.toString(), 'List.Cons', 'toString on variant constructor should work')
+  t.same(List.Nil.toString(), 'List.Nil()', 'toString on unit variant should work')
+  t.same(list.x, a, 'when checking head value should return correct value')
+  t.same(list.xs, List.Nil, 'when checking value value should return correct value')
+  t.same(list.xs.constructor, List, 'constructor on value should refer to TypeRep of the value')
+  t.same(list.cata({
+    Cons: (x, xs) => [x, xs],
+    Nil: () => []
+  }), [list.x, list.xs], 'cata should work on Cons')
+  t.ok(List.Nil.cata({
+    Cons: () => false,
+    Nil: () => true
+  }), 'cata should work on Nil')
+  t.ok(List.is(list), '`is` on type works')
+  t.notOk(List.is({}), '`is` on type works')
+  t.ok(List.Cons.is(list), '`is` on variant works')
+  t.notOk(List.Cons.is(list.xs), '`is` on variant works')
+  t.notOk(List.Nil.is(list), '`is` on unit value works')
+  t.ok(List.Nil.is(list.xs), '`is` on unit value works')
+  t.same(List.prototype.foo, list.foo, 'values in typerep.prototype are accassible from instance values')
+  t.same(List.prototype.foo, List.Nil.foo, 'values in typerep.prototype are accassible from instance values')
+  t.end()
+})
