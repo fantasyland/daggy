@@ -16,15 +16,17 @@
     "sanctuary-type-identifiers": "1.0.0"
   },
   "devDependencies": {
+    "daggy": "0.0.x",
     "fantasy-combinators": "0.0.x",
     "standard": "8.6.0",
     "tap": "10.0.0"
   },
   "scripts": {
-    "lint": "standard src/*.js test/*.js",
-    "lint:fix": "standard --fix src/*.js test/*.js",
+    "lint": "standard bench/*.js src/*.js test/*.js",
+    "lint:fix": "npm run lint -- --fix",
     "test": "tap -R tap test/*.js",
-    "check": "npm run lint && npm run test"
+    "check": "npm run lint && npm run test",
+    "bench": "node bench/"
   },
   "files": [
     "src/*.js"

@@ -52,8 +52,13 @@ test('taggedSum', (t) => {
     'when creating a taggedSum type with to many arguments throws error'
   )
   t.throws(
-    () => { list.cata({ Cons: (a, b) => a }) },
+    () => { List.Nil.cata({}) },
     new Error(`Constructors given to cata didn't include: Nil`),
+    'throws if all cases are not handled'
+  )
+  t.throws(
+    () => { list.cata({}) },
+    new Error(`Constructors given to cata didn't include: Cons`),
     'throws if all cases are not handled'
   )
   t.same(list.toString(), `List.Cons(${toString(a)}, List.Nil())`, 'toString on value should work')
