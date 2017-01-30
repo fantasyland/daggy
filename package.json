@@ -16,7 +16,7 @@
     "sanctuary-type-identifiers": "1.0.0"
   },
   "devDependencies": {
-    "daggy": "0.0.x",
+    "daggy": "0.0.1",
     "fantasy-combinators": "0.0.x",
     "standard": "8.6.0",
     "tap": "10.0.0"
@@ -32,5 +32,5 @@
     "src/*.js"
   ],
   "main": "src/daggy.js",
-  "version": "1.0.0"
+  "version": "0.0.2"
 }
