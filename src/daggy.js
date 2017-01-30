@@ -6,6 +6,10 @@ const type = require('sanctuary-type-identifiers')
 const TAG = '@@tag'
 // * array of arguments used to create a value (to speed up `cata`)
 const VALUES = '@@values'
+// * `@@type` of it's returned results
+const TYPE = '@@type'
+// * `TYPE` of it's returned results
+const RET_TYPE = '@@ret_type'
 
 // adopted version of withValue from  https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty
 const defProp = (obj, prop, val) => {
@@ -41,14 +45,11 @@ const tagged = (typeName, fields) => {
   typeRep.toString = typeRepToString
   typeRep.prototype = proto
   typeRep.is = isType
-  typeRep['@@type'] = typeName
+  typeRep[TYPE] = typeName
   proto.constructor = typeRep
   return typeRep
 }
 
-// [1] - possible other names are: `hasInstance`, `isVariant`
-// [2] - it might not be the best choise to also define is on value as
-//       user could use `===` as there should only be one such value.
 const taggedSum = (typeName, definitions) => {
   const proto = {}
   proto.cata = taggedSum$cata
@@ -57,7 +58,7 @@ const taggedSum = (typeName, definitions) => {
     toString: typeRepToString,
     prototype: proto,
     is: isType, // [1]
-    '@@type': typeName
+    [TYPE]: typeName
   }
   proto.constructor = typeRep
   Object.keys(definitions).forEach(tag => {
@@ -66,13 +67,13 @@ const taggedSum = (typeName, definitions) => {
     defProp(tagProto, TAG, tag)
     if (fields.length === 0) {
       typeRep[tag] = makeValue(fields, tagProto, [])
-      typeRep[tag].is = taggedSum$isUnitValue // [1,2]
+      typeRep[tag].is = taggedSum$isUnitValue
       return
     }
     typeRep[tag] = (...args) => makeValue(fields, tagProto, args)
-    typeRep[tag].is = taggedSum$isVariant // [1]
+    typeRep[tag].is = taggedSum$isVariant
     typeRep[tag][TAG] = tag
-    typeRep[tag]['@@typeRep'] = typeRep
+    typeRep[tag][RET_TYPE] = typeName
     typeRep[tag].toString = taggedSum$constructorToString
   })
   return typeRep
@@ -87,21 +88,21 @@ const taggedSum$cata = function (fs) {
 }
 
 const taggedSum$constructorToString = function () {
-  return `${this['@@typeRep']['@@type']}.${this[TAG]}`
+  return `${this[RET_TYPE]}.${this[TAG]}`
 }
 
 const typeRepToString = function () {
-  return this['@@type']
+  return this[TYPE]
 }
 
 const taggedSum$objToString = function () {
-  return `${this.constructor['@@type']}.${this[TAG]}${arrToString(this[VALUES])}`
+  return `${this.constructor[TYPE]}.${this[TAG]}${arrToString(this[VALUES])}`
 }
 
 const taggedSum$isVariant = function (val) {
   return Boolean(val) &&
     this[TAG] === val[TAG] &&
-    this['@@typeRep']['@@type'] === type(val)
+    this[RET_TYPE] === type(val)
 }
 
 const taggedSum$isUnitValue = function (val) {
@@ -111,11 +112,11 @@ const taggedSum$isUnitValue = function (val) {
 }
 
 const isType = function (val) {
-  return this['@@type'] === type(val)
+  return this[TYPE] === type(val)
 }
 
 const tagged$objToString = function () {
-  return `${this.constructor['@@type']}${arrToString(this[VALUES])}`
+  return `${this.constructor[TYPE]}${arrToString(this[VALUES])}`
 }
 
 const makeValue = (fields, proto, values) => {

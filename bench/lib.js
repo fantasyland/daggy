@@ -57,8 +57,8 @@ module.exports = (specs) => {
     console.log(`START: ${name}`)
     const suite = new benchmark.Suite(name)
     const spec = specs[name]
-    suite.add('Old', () => spec.Old(env.Old))
-    suite.add('New', () => spec.New(env.New))
+    suite.add('Old', { minSamples: 80, fn: () => spec.Old(env.Old) })
+    suite.add('New', { minSamples: 80, fn: () => spec.New(env.New) })
     suite.on('complete', function () {
       const fast = this.filter('fastest')[0]
       const row = [name]
