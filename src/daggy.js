@@ -125,8 +125,7 @@ const taggedSum$isUnitValue = function (val) {
 }
 
 const isType = function (val) {
-  return Boolean(val) &&
-    this['@@type'] === type(val)
+  return this['@@type'] === type(val)
 }
 
 const tagged$objToString = function () {
