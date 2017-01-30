@@ -26,11 +26,11 @@ const arrToString = (arr) => {
   if (arr.length === 0) {
     return ''
   }
-  let str = toString(arr[0])
+  let str = '(' + toString(arr[0])
   for (var i = 1; i < arr.length; i++) {
     str += ', ' + toString(arr[i])
   }
-  return str
+  return str + ')'
 }
 
 const tagged = (typeName, fields) => {
@@ -109,7 +109,7 @@ const typeRepToString = function () {
 }
 
 const taggedSum$objToString = function () {
-  return `${this.constructor['@@type']}.${this[TAG]}(${arrToString(this[VALUES])})`
+  return `${this.constructor['@@type']}.${this[TAG]}${arrToString(this[VALUES])}`
 }
 
 const taggedSum$isVariant = function (val) {
@@ -129,7 +129,7 @@ const isType = function (val) {
 }
 
 const tagged$objToString = function () {
-  return `${this.constructor['@@type']}(${arrToString(this[VALUES])})`
+  return `${this.constructor['@@type']}${arrToString(this[VALUES])}`
 }
 
 const tagged$makeValue = (typeRep, fields, values) => {

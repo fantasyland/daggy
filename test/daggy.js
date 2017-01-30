@@ -61,10 +61,10 @@ test('taggedSum', (t) => {
     new Error(`Constructors given to cata didn't include: Cons`),
     'throws if all cases are not handled'
   )
-  t.same(list.toString(), `List.Cons(${toString(a)}, List.Nil())`, 'toString on value should work')
+  t.same(list.toString(), `List.Cons(${toString(a)}, List.Nil)`, 'toString on value should work')
   t.same(List.toString(), 'List', 'toString on type should work')
   t.same(List.Cons.toString(), 'List.Cons', 'toString on variant constructor should work')
-  t.same(List.Nil.toString(), 'List.Nil()', 'toString on unit variant should work')
+  t.same(List.Nil.toString(), 'List.Nil', 'toString on unit variant should work')
   t.same(list.x, a, 'when checking head value should return correct value')
   t.same(list.xs, List.Nil, 'when checking value value should return correct value')
   t.same(list.xs.constructor, List, 'constructor on value should refer to TypeRep of the value')
