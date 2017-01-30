@@ -126,7 +126,7 @@ const arrToString = (arr) => {
   }
   let str = '(' + toString(arr[0])
   for (var i = 1; i < arr.length; i++) {
-    str += ', ' + toString(arr[i])
+    str = str + ', ' + toString(arr[i])
   }
   return str + ')'
 }
