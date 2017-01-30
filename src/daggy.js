@@ -37,13 +37,11 @@ const tagged = (typeName, fields) => {
   const proto = {}
   proto.toString = tagged$objToString
   // this way we avoid named function
-  const typeRep = (0, (...args) => tagged$makeValue(typeRep, fields, args))
-  Object.assign(typeRep, {
-    toString: typeRepToString,
-    prototype: proto,
-    is: isType,
-    '@@type': typeName
-  })
+  const typeRep = (0, (...args) => makeValue(fields, proto, args))
+  typeRep.toString = typeRepToString
+  typeRep.prototype = proto
+  typeRep.is = isType
+  typeRep['@@type'] = typeName
   proto.constructor = typeRep
   return typeRep
 }
@@ -59,17 +57,19 @@ const taggedSum = (typeName, definitions) => {
     toString: typeRepToString,
     prototype: proto,
     is: isType, // [1]
-    '@@union': definitions,
     '@@type': typeName
   }
   proto.constructor = typeRep
   Object.keys(definitions).forEach(tag => {
-    if (definitions[tag].length === 0) {
-      typeRep[tag] = taggedSum$makeValue(typeRep, tag, [])
+    const fields = definitions[tag]
+    const tagProto = Object.create(typeRep.prototype)
+    defProp(tagProto, TAG, tag)
+    if (fields.length === 0) {
+      typeRep[tag] = makeValue(fields, tagProto, [])
       typeRep[tag].is = taggedSum$isUnitValue // [1,2]
       return
     }
-    typeRep[tag] = (...args) => taggedSum$makeValue(typeRep, tag, args)
+    typeRep[tag] = (...args) => makeValue(fields, tagProto, args)
     typeRep[tag].is = taggedSum$isVariant // [1]
     typeRep[tag][TAG] = tag
     typeRep[tag]['@@typeRep'] = typeRep
@@ -84,20 +84,6 @@ const taggedSum$cata = function (fs) {
     throw new TypeError("Constructors given to cata didn't include: " + tag)
   }
   return fs[tag].apply(fs, this[VALUES])
-}
-
-const taggedSum$makeValue = (typeRep, tag, values) => {
-  const fields = typeRep['@@union'][tag]
-  if (values.length !== fields.length) {
-    throw new TypeError(`Expected ${fields.length} arguments, got ${values.length}`)
-  }
-  const obj = Object.create(typeRep.prototype)
-  defProp(obj, VALUES, values)
-  defProp(obj, TAG, tag)
-  for (let idx = 0; idx < fields.length; idx++) {
-    obj[fields[idx]] = values[idx]
-  }
-  return obj
 }
 
 const taggedSum$constructorToString = function () {
@@ -132,11 +118,11 @@ const tagged$objToString = function () {
   return `${this.constructor['@@type']}${arrToString(this[VALUES])}`
 }
 
-const tagged$makeValue = (typeRep, fields, values) => {
+const makeValue = (fields, proto, values) => {
   if (values.length !== fields.length) {
     throw new TypeError(`Expected ${fields.length} arguments, got ${values.length}`)
   }
-  const obj = Object.create(typeRep.prototype)
+  const obj = Object.create(proto)
   defProp(obj, VALUES, values)
   for (let idx = 0; idx < fields.length; idx++) {
     obj[fields[idx]] = values[idx]

@@ -35,12 +35,12 @@ test('tagged', (t) => {
   t.ok(Tuple.is(tpl), '`is` on type works')
   t.notOk(Tuple.is({}), '`is` on type works')
   t.same(Tuple.prototype.foo, tpl.foo, 'values in typerep.prototype are accassible from instance values')
+  t.ok(Tuple.prototype.isPrototypeOf(tpl), 'prototype chain is correct')
   t.end()
 })
 
 test('taggedSum', (t) => {
   const list = List.Cons(a, List.Nil)
-
   t.throws(
     () => { List.Cons(1) },
     new TypeError(`Expected 2 arguments, got 1`),
@@ -84,5 +84,7 @@ test('taggedSum', (t) => {
   t.ok(List.Nil.is(list.xs), '`is` on unit value works')
   t.same(List.prototype.foo, list.foo, 'values in typerep.prototype are accassible from instance values')
   t.same(List.prototype.foo, List.Nil.foo, 'values in typerep.prototype are accassible from instance values')
+  t.ok(List.prototype.isPrototypeOf(list), 'prototype chain is correct')
+  t.ok(List.prototype.isPrototypeOf(List.Nil), 'prototype chain is correct')
   t.end()
 })
