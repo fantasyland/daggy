@@ -1,127 +1,137 @@
-const getInstance = require('fantasy-helpers/src/get-instance');
-const {constant} = require('fantasy-combinators');
+const { toString } = require('sanctuary-type-classes')
+const type = require('sanctuary-type-identifiers')
 
-/**
-  ## `daggy.tagged(arguments)`
+// Names of prop used to store:
+// * name of variant of a sum type
+const TAG = '@@tag'
+// * array of arguments used to create a value (to speed up `cata`)
+const VALUES = '@@values'
+// * `@@type` of it's returned results
+const TYPE = '@@type'
+// * `@@type` of variant constructor's returned results
+const RET_TYPE = '@@ret_type'
 
-  Creates a new constructor with the given field names as
-  arguments and properties. Allows `instanceof` checks with
-  returned constructor.
-
-  ```javascript
-  const Tuple3 = daggy.tagged('x', 'y', 'z');
-
-  const _123 = Tuple3(1, 2, 3); // optional new keyword
-  _123.x == 1 && _123.y == 2 && _123.z == 3; // true
-  _123 instanceof Tuple3; // true
-  ```
-**/
-function tagged() {
-    const fields = [].slice.apply(arguments);
-
-    function toString(args) {
-      const x = [].slice.apply(args);
-      return () => {
-        const values = x.map((y) => y.toString());
-        return '(' + values.join(', ') + ')';
-      };
-    }
-
-    function wrapped() {
-        const self = getInstance(this, wrapped);
-        var i;
-
-        if(arguments.length != fields.length)
-            throw new TypeError('Expected ' + fields.length + ' arguments, got ' + arguments.length);
-
-        for(i = 0; i < fields.length; i++)
-            self[fields[i]] = arguments[i];
-
-        self.toString = toString(arguments);
-
-        return self;
-    }
-    wrapped._length = fields.length;
-    return wrapped;
+const tagged = (typeName, fields) => {
+  const proto = {}
+  proto.toString = tagged$toString
+  // this way we avoid named function
+  const typeRep = (0, (...args) => makeValue(fields, proto, args))
+  typeRep.toString = typeRepToString
+  typeRep.prototype = proto
+  typeRep.is = isType
+  typeRep[TYPE] = typeName
+  proto.constructor = typeRep
+  return typeRep
 }
 
-/**
-  ## `daggy.taggedSum(constructors)`
-
-  Creates a constructor for each key in `constructors`. Returns a
-  function with each constructor as a property. Allows
-  `instanceof` checks for each constructor and the returned
-  function.
-
-  ```javascript
-  const Option = daggy.taggedSum({
-      Some: ['x'],
-      None: []
-  });
-
-  Option.Some(1) instanceof Option.Some; // true
-  Option.Some(1) instanceof Option; // true
-  Option.None instanceof Option; // true
-
-  function incOrZero(o) {
-      return o.cata({
-          Some: function(x) {
-              return x + 1;
-          },
-          None: function() {
-              return 0;
-          }
-      });
+const taggedSum = (typeName, constructors) => {
+  const proto = {}
+  proto.cata = sum$cata
+  proto.toString = sum$toString
+  const typeRep = {
+    toString: typeRepToString,
+    prototype: proto,
+    is: isType,
+    [TYPE]: typeName
   }
-  incOrZero(Option.Some(1)); // 2
-  incOrZero(Option.None); // 0
-  ```
-**/
-function taggedSum(constructors) {
-    var key,
-        ctor;
-
-    function definitions() {
-        throw new TypeError('Tagged sum was called instead of one of its properties.');
+  proto.constructor = typeRep
+  Object.keys(constructors).forEach(tag => {
+    const fields = constructors[tag]
+    const tagProto = Object.create(proto)
+    defProp(tagProto, TAG, tag)
+    if (fields.length === 0) {
+      typeRep[tag] = makeValue(fields, tagProto, [])
+      typeRep[tag].is = sum$isUnit
+      return
     }
-
-    function makeCata(key) {
-        // Note: we need the prototype from this function.
-        return function(dispatches) {
-            var i;
-
-            const fields = constructors[key];
-            const args = [];
-
-            if(!dispatches[key])
-                throw new TypeError("Constructors given to cata didn't include: " + key);
-
-            for(i = 0; i < fields.length; i++)
-                args.push(this[fields[i]]);
-
-            return dispatches[key].apply(this, args);
-        };
-    }
-
-    function makeProto(key) {
-        const proto = Object.create(definitions.prototype);
-        proto.cata = makeCata(key);
-        return proto;
-    }
-
-    for(key in constructors) {
-        if(!constructors[key].length) {
-            definitions[key] = makeProto(key);
-            definitions[key].toString = constant('()');
-            continue;
-        }
-        ctor = tagged.apply(null, constructors[key]);
-        definitions[key] = ctor;
-        definitions[key].prototype = makeProto(key);
-        definitions[key].prototype.constructor = ctor;
-    }
-
-    return definitions;
+    typeRep[tag] = (...args) => makeValue(fields, tagProto, args)
+    typeRep[tag].is = sum$isVariant
+    typeRep[tag][TAG] = tag
+    typeRep[tag][RET_TYPE] = typeName
+    typeRep[tag].toString = sum$ctrToString
+  })
+  return typeRep
 }
 
-exports = module.exports = {tagged, taggedSum};
+const sum$cata = function (fs) {
+  const tag = this[TAG]
+  if (!fs[tag]) {
+    throw new TypeError("Constructors given to cata didn't include: " + tag)
+  }
+  return fs[tag].apply(fs, this[VALUES])
+}
+
+const sum$ctrToString = function () {
+  return `${this[RET_TYPE]}.${this[TAG]}`
+}
+
+const sum$toString = function () {
+  return `${this.constructor[TYPE]}.${this[TAG]}${arrToString(this[VALUES])}`
+}
+
+const typeRepToString = function () {
+  return this[TYPE]
+}
+
+const tagged$toString = function () {
+  return `${this.constructor[TYPE]}${arrToString(this[VALUES])}`
+}
+
+const sum$isVariant = function (val) {
+  return Boolean(val) &&
+    this[TAG] === val[TAG] &&
+    this[RET_TYPE] === type(val)
+}
+
+const sum$isUnit = function (val) {
+  return this === val || Boolean(val) &&
+    this[TAG] === val[TAG] &&
+    type(this) === type(val)
+}
+
+const isType = function (val) {
+  return this[TYPE] === type(val)
+}
+
+const makeValue = (fields, proto, values) => {
+  if (values.length !== fields.length) {
+    throw new TypeError(`Expected ${fields.length} arguments, got ${values.length}`)
+  }
+  const obj = Object.create(proto)
+  defProp(obj, VALUES, values)
+  for (let idx = 0; idx < fields.length; idx++) {
+    obj[fields[idx]] = values[idx]
+  }
+  return obj
+}
+
+// adopted version of withValue from  https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty
+const defProp = (obj, prop, val) => {
+  var desc = defProp.desc || (
+    defProp.desc = {
+      enumerable: false,
+      writable: false,
+      configurable: false,
+      value: null
+    }
+  )
+  desc.value = val
+  Object.defineProperty(obj, prop, desc)
+}
+
+// optimised version of `arr.map(toString).join(', ')`
+const arrToString = (arr) => {
+  if (arr.length === 0) {
+    return ''
+  }
+  let str = '(' + toString(arr[0])
+  for (var i = 1; i < arr.length; i++) {
+    str = str + ', ' + toString(arr[i])
+  }
+  return str + ')'
+}
+
+module.exports = {
+  taggedSum,
+  tagged
+}
