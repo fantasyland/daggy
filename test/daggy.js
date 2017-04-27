@@ -27,6 +27,16 @@ test('tagged', (t) => {
     new TypeError(`Expected 2 arguments, got 3`),
     'when creating a tagged type with too many arguments throws error'
   )
+  t.throws(
+    () => { Tuple(1, null) },
+    new TypeError(`Expected definite value for _2`),
+    'when creating a tagged type with null argument throws error'
+  )
+  t.throws(
+    () => { Tuple(undefined, 2) },
+    new TypeError(`Expected definite value for _1`),
+    'when creating a tagged type with undefined argument throws error'
+  )
   t.same(tpl.toString(), `Tuple(${toString(a)}, ${toString(b)})`, 'toString on value should work')
   t.same(Tuple.toString(), `Tuple`, 'toString on type should work')
   t.same(tpl._1, a, 'when checking _1 value should return correct value')
