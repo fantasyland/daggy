@@ -22,11 +22,15 @@
     "daggy": "fantasyland/daggy#8ef74ee0b90bbace396f48d1a5e20347f0297478",
     "fantasy-combinators": "0.0.x",
     "standard": "8.6.0",
-    "tap": "10.0.0"
+    "tap": "10.0.0",
+    "xyz": "2.1.x"
   },
   "scripts": {
     "lint": "standard bench/*.js src/*.js test/*.js",
     "lint:fix": "npm run lint -- --fix",
+    "release-major": "xyz --repo git@github.com:fantasyland/daggy.git --increment major",
+    "release-minor": "xyz --repo git@github.com:fantasyland/daggy.git --increment minor",
+    "release-patch": "xyz --repo git@github.com:fantasyland/daggy.git --increment patch",
     "test": "tap -R tap test/*.js",
     "check": "npm run lint && npm run test",
     "bench": "node bench/"
