@@ -15,7 +15,7 @@ const tagged = (typeName, fields) => {
   const proto = {}
   proto.toString = tagged$toString
   // this way we avoid named function
-  const typeRep = (0, (...args) => makeValue(fields, proto, args))
+  const typeRep = makeConstructor(fields, proto)
   typeRep.toString = typeRepToString
   typeRep.prototype = proto
   typeRep.is = isType
@@ -44,7 +44,7 @@ const taggedSum = (typeName, constructors) => {
       typeRep[tag].is = sum$isUnit
       return
     }
-    typeRep[tag] = (...args) => makeValue(fields, tagProto, args)
+    typeRep[tag] = makeConstructor(fields, tagProto)
     typeRep[tag].is = sum$isVariant
     typeRep[tag][TAG] = tag
     typeRep[tag][RET_TYPE] = typeName
@@ -129,6 +129,26 @@ const arrToString = (arr) => {
     str = str + ', ' + toString(arr[i])
   }
   return str + ')'
+}
+
+const makeConstructor= (fields, proto) => {
+  switch (fields.length) {
+    case 1: return function(a) { return makeValue(fields, proto, arguments) }
+    case 2: return function(a, b) { return makeValue(fields, proto, arguments) }
+    case 3: return function(a, b, c) { return makeValue(fields, proto, arguments) }
+    case 4: return function(a, b, c, d) { return makeValue(fields, proto, arguments) }
+    case 5: return function(a, b, c, d, e) { return makeValue(fields, proto, arguments) }
+    case 6: return function(a, b, c, d, e, f) { return makeValue(fields, proto, arguments) }
+    case 7: return function(a, b, c, d, e, f, g) { return makeValue(fields, proto, arguments) }
+    case 8: return function(a, b, c, d, e, f, g, h) { return makeValue(fields, proto, arguments) }
+    case 9: return function(a, b, c, d, e, f, g, h, i) { return makeValue(fields, proto, arguments) }
+    case 10: return function(a, b, c, d, e, f, g, h, i, j) { return makeValue(fields, proto, arguments) }
+    default: return Object.defineProperty(
+      function() { return makeValue(fields, proto, arguments) },
+      "length",
+      { value: fields.length }
+    )
+  }
 }
 
 module.exports = {
