@@ -27,19 +27,19 @@
 // └────────────────────┴──────────────────────────────────────────────┴──────────────────────────────────────────────┴─────┘
 require('./lib')({
   'make.taggedSum': {
-    Old: ({ taggedSum, ListDef }) => taggedSum(ListDef),
+    Old: ({ taggedSum, ListDef }) => taggedSum('List', ListDef),
     New: ({ taggedSum, ListDef }) => taggedSum('List', ListDef)
   },
   'make.tagged': {
-    Old: ({ tagged, TupleDef }) => tagged(TupleDef[0], TupleDef[1]),
+    Old: ({ tagged, TupleDef }) => tagged('Tuple', TupleDef),
     New: ({ tagged, TupleDef }) => tagged('Tuple', TupleDef)
   },
   'make.new.taggedSum': {
-    Old: ({ taggedSum, ListDef }) => taggedSum(ListDef).Cons(1, 2),
+    Old: ({ taggedSum, ListDef }) => taggedSum('List', ListDef).Cons(1, 2),
     New: ({ taggedSum, ListDef }) => taggedSum('List', ListDef).Cons(1, 2)
   },
   'make.new.tagged': {
-    Old: ({ tagged, TupleDef }) => tagged(TupleDef[0], TupleDef[1])(1, 2),
+    Old: ({ tagged, TupleDef }) => tagged('Tuple', TupleDef)(1, 2),
     New: ({ tagged, TupleDef }) => tagged('Tuple', TupleDef)(1, 2)
   },
   'new.taggedSum': {
@@ -63,15 +63,15 @@ require('./lib')({
     New: ({ list, pattern }) => list.cata(pattern)
   },
   'instanceof.Sum': {
-    Old: ({ list, List }) => list instanceof List,
+    Old: ({ list, List }) => List.is(list),
     New: ({ list, List }) => List.is(list)
   },
   'instanceof.Sum.Tag': {
-    Old: ({ list, List }) => list instanceof List.Cons,
+    Old: ({ list, List }) => List.Cons.is(list),
     New: ({ list, List }) => List.Cons.is(list)
   },
   'instanceof.Type': {
-    Old: ({ tuple, Tuple }) => tuple instanceof Tuple,
+    Old: ({ tuple, Tuple }) => Tuple.is(tuple),
     New: ({ tuple, Tuple }) => Tuple.is(tuple)
   }
 })

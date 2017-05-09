@@ -19,7 +19,7 @@
     "benchmark": "2.1.3",
     "cli-table": "0.3.1",
     "colors": "1.1.2",
-    "daggy": "fantasyland/daggy#8ef74ee0b90bbace396f48d1a5e20347f0297478",
+    "daggy": "1.0.0",
     "fantasy-combinators": "0.0.x",
     "standard": "8.6.0",
     "tap": "10.0.0",
