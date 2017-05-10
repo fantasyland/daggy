@@ -94,7 +94,6 @@ const isType = function (val) {
 }
 
 const makeValue = (fields, proto, values, argumentsLength) => {
-  console.log('len: ' + argumentsLength)
   if (argumentsLength !== fields.length) {
     throw new TypeError(`Expected ${fields.length} arguments, got ${argumentsLength}`)
   }
