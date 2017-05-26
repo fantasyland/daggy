@@ -100,6 +100,9 @@ const makeValue = (fields, proto, values, argumentsLength) => {
   const obj = Object.create(proto)
   defProp(obj, VALUES, values)
   for (let idx = 0; idx < fields.length; idx++) {
+    if (values[idx] === null || values[idx] === undefined) {
+      throw new TypeError(`Expected definite value for ${fields[idx]}, got ${values[idx]}`)
+    }
     obj[fields[idx]] = values[idx]
   }
   return obj
