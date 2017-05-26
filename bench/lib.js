@@ -10,14 +10,14 @@ const ListDef = {
   Nil: []
 }
 
-const TupleOld = daggyOld.tagged(TupleDef[0], TupleDef[1])
-const ListOld = daggyOld.taggedSum(ListDef)
-const listOld = ListOld.Cons(1, ListOld.Nil)
+const TupleOld = daggyOld.tagged('Tuple', TupleDef)
+const ListOld  = daggyOld.taggedSum('List', ListDef)
+const listOld  = ListOld.Cons(1, ListOld.Nil)
 const tupleOld = TupleOld(1, 2)
 
-const TupleNew = daggyNew.tagged('Tuple', ['_1', '_2'])
-const ListNew = daggyNew.taggedSum('List', ListDef)
-const listNew = ListNew.Cons(1, ListNew.Nil)
+const TupleNew = daggyNew.tagged('Tuple', TupleDef)
+const ListNew  = daggyNew.taggedSum('List', ListDef)
+const listNew  = ListNew.Cons(1, ListNew.Nil)
 const tupleNew = TupleNew(1, 2)
 
 const pattern = {
