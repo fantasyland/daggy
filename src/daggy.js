@@ -131,21 +131,21 @@ const arrToString = (arr) => {
   return str + ')'
 }
 
-const makeConstructor= (fields, proto) => {
+const makeConstructor = (fields, proto) => {
   switch (fields.length) {
-    case 1: return function(a) { return makeValue(fields, proto, [a], arguments.length) }
-    case 2: return function(a, b) { return makeValue(fields, proto, [a, b], arguments.length) }
-    case 3: return function(a, b, c) { return makeValue(fields, proto, [a, b, c], arguments.length) }
-    case 4: return function(a, b, c, d) { return makeValue(fields, proto, [a, b, c, d], arguments.length) }
-    case 5: return function(a, b, c, d, e) { return makeValue(fields, proto, [a, b, c, d, e], arguments.length) }
-    case 6: return function(a, b, c, d, e, f) { return makeValue(fields, proto, [a, b, c, d, e, f], arguments.length) }
-    case 7: return function(a, b, c, d, e, f, g) { return makeValue(fields, proto, [a, b, c, d, e, f, g], arguments.length) }
-    case 8: return function(a, b, c, d, e, f, g, h) { return makeValue(fields, proto, [a, b, c, d, e, f, g, h], arguments.length) }
-    case 9: return function(a, b, c, d, e, f, g, h, i) { return makeValue(fields, proto, [a, b, c, d, e, f, g, h, i], arguments.length) }
-    case 10: return function(a, b, c, d, e, f, g, h, i, j) { return makeValue(fields, proto, [a, b, c, d, e, f, g, h, i, j], arguments.length) }
+    case 1: return function (a) { return makeValue(fields, proto, [a], arguments.length) }
+    case 2: return function (a, b) { return makeValue(fields, proto, [a, b], arguments.length) }
+    case 3: return function (a, b, c) { return makeValue(fields, proto, [a, b, c], arguments.length) }
+    case 4: return function (a, b, c, d) { return makeValue(fields, proto, [a, b, c, d], arguments.length) }
+    case 5: return function (a, b, c, d, e) { return makeValue(fields, proto, [a, b, c, d, e], arguments.length) }
+    case 6: return function (a, b, c, d, e, f) { return makeValue(fields, proto, [a, b, c, d, e, f], arguments.length) }
+    case 7: return function (a, b, c, d, e, f, g) { return makeValue(fields, proto, [a, b, c, d, e, f, g], arguments.length) }
+    case 8: return function (a, b, c, d, e, f, g, h) { return makeValue(fields, proto, [a, b, c, d, e, f, g, h], arguments.length) }
+    case 9: return function (a, b, c, d, e, f, g, h, i) { return makeValue(fields, proto, [a, b, c, d, e, f, g, h, i], arguments.length) }
+    case 10: return function (a, b, c, d, e, f, g, h, i, j) { return makeValue(fields, proto, [a, b, c, d, e, f, g, h, i, j], arguments.length) }
     default: return Object.defineProperty(
-      function() { return makeValue(fields, proto, arguments, arguments.length) },
-      "length",
+      function () { return makeValue(fields, proto, arguments, arguments.length) },
+      'length',
       { value: fields.length }
     )
   }
