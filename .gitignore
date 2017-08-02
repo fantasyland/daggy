@@ -5,3 +5,4 @@ coverage
 docs
 node_modules
 tags
+dist/
