@@ -1,5 +1,8 @@
 # Daggy
 
+[![Build Status](https://img.shields.io/travis/fantasyland/daggy/master.svg)](https://travis-ci.org/fantasyland/daggy)
+[![npm](https://img.shields.io/npm/v/daggy.svg)](https://www.npmjs.com/package/daggy)
+
 Library for creating tagged constructors a.k.a. "union types" or "sum types".
 
 ## `daggy.tagged(typeName, fields)`
