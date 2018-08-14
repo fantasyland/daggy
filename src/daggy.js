@@ -35,6 +35,7 @@
     typeRep.toString = typeRepToString;
     typeRep.prototype = proto;
     typeRep.is = isType;
+    typeRep.from = makeConstructorFromObject(fields, proto);
     typeRep[TYPE] = typeName;
     proto.constructor = typeRep;
     return typeRep;
@@ -62,6 +63,7 @@
       typeRep[tag][TAG] = tag;
       typeRep[tag][RET_TYPE] = typeName;
       typeRep[tag].toString = sum$ctrToString;
+      typeRep[tag].from = makeConstructorFromObject(fields, proto);
     });
     return typeRep;
   }
@@ -167,6 +169,20 @@
         {value: fields.length}
       );
     }
+  }
+
+  function makeConstructorFromObject(fields, proto) {
+    return function(obj) {
+      var values = [];
+      for (var idx = 0; idx < fields.length; idx += 1) {
+        var field = fields[idx];
+        if (!Object.prototype.hasOwnProperty.call(obj, field)) {
+          throw new TypeError('Missing field: ' + field);
+        }
+        values.push(obj[field]);
+      }
+      return makeValue(fields, proto, values, values.length);
+    };
   }
 
   return {tagged: tagged, taggedSum: taggedSum};

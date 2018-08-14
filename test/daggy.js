@@ -36,6 +36,17 @@ test('tagged', (t) => {
   t.notOk(Tuple.is({}), '`is` on type works')
   t.same(Tuple.prototype.foo, tpl.foo, 'values in typerep.prototype are accassible from instance values')
   t.ok(Tuple.prototype.isPrototypeOf(tpl), 'prototype chain is correct')
+  t.test('build from object', (t) => {
+    const tpl = Tuple.from({_2: b, _1: a})
+    t.same(tpl._1, a, 'First value on tuple is correct')
+    t.same(tpl._2, b, 'Second value on tuple is correct')
+    t.throws(
+      () => { Tuple.from({ _1: 1 }) },
+      new TypeError('Missing field: _2'),
+      'when creating a tagged type from an object with a missing field'
+    )
+    t.end()
+  })
   t.end()
 })
 
@@ -86,5 +97,17 @@ test('taggedSum', (t) => {
   t.same(List.prototype.foo, List.Nil.foo, 'values in typerep.prototype are accassible from instance values')
   t.ok(List.prototype.isPrototypeOf(list), 'prototype chain is correct')
   t.ok(List.prototype.isPrototypeOf(List.Nil), 'prototype chain is correct')
+  t.test('build from object', (t) => {
+    const list = List.Cons.from({xs: List.Nil, x: a})
+    t.ok(List.is(list), '`is` on type works')
+    t.same(list.x, a, 'head value of list works')
+    t.same(list.xs, List.Nil, 'tail value of list works')
+    t.throws(
+      () => { List.Cons.from({x: 1}) },
+      new TypeError('Missing field: xs'),
+      'when creating a taggedSum from an object with a missing field'
+    )
+    t.end()
+  })
   t.end()
 })

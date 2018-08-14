@@ -21,6 +21,7 @@ Point3D.prototype.scale = function(n){
 }
 const b = a.scale(2) // { x: 2, y: 4, z: 6 }
 b.toString() // 'Point3D(2, 4, 6)'
+const c = Point3D.from({y: 2, x: 1, z: 3}) // { x: 1, y: 2, z: 3 }
 ```
 
 ## `daggy.taggedSum(typeName, constructors)`
@@ -48,4 +49,5 @@ Option.prototype.map = function (f) {
 }
 const b = a.map(x => x+1) // { x: 2 }
 b.toString() // 'Option.Some(2)'
+const c = Option.Some.from({x: 1}) // { x: 1 }
 ```
