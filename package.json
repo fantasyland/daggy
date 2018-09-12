@@ -25,13 +25,11 @@
     "sanctuary-style": "0.5.x",
     "standard": "8.6.0",
     "tap": "10.0.0",
-    "xyz": "2.1.x"
+    "xyz": "3.0.x"
   },
   "scripts": {
     "lint": "eslint --config node_modules/sanctuary-style/eslint-es3.json --env es3 --global define --global module --global require --global self -- src/daggy.js && standard bench/*.js test/*.js",
-    "release-major": "xyz --repo git@github.com:fantasyland/daggy.git --increment major",
-    "release-minor": "xyz --repo git@github.com:fantasyland/daggy.git --increment minor",
-    "release-patch": "xyz --repo git@github.com:fantasyland/daggy.git --increment patch",
+    "release": "xyz --repo git@github.com:fantasyland/daggy.git --increment",
     "test": "tap -R tap test/*.js",
     "check": "npm run lint && npm run test",
     "bench": "node bench/"
