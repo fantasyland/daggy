@@ -47,6 +47,17 @@ test('tagged', (t) => {
     )
     t.end()
   })
+  t.test('tag.is() is pre-bound to the rep', (t) => {
+    const isTuple = Tuple.is
+    const list = List.Nil
+    t.doesNotThrow(
+      () => { isTuple(tpl) },
+      'tag.is() can be assigned to an unbound var and used separate to test instances'
+    )
+    t.ok(isTuple(tpl), 'tag.is() should correctly identify instances even when used as an unbound var')
+    t.notOk(isTuple(list), 'tag.is() should correctly not identify instances of other types even when used as an unbound var')
+    t.end()
+  })
   t.end()
 })
 
@@ -107,6 +118,31 @@ test('taggedSum', (t) => {
       new TypeError('Missing field: xs'),
       'when creating a taggedSum from an object with a missing field'
     )
+    t.end()
+  })
+  t.test('pre-bound .is()', (t) => {
+    const tpl = Tuple(a, b)
+    const isList = List.is
+    const isNil = List.Nil.is
+    const nilList = List.Nil
+    t.test('typeRep.is() is prebound to the typeRep', (t) => {
+      t.doesNotThrow(
+        () => { isList(list) },
+        'typeRep.is() can be assigned to an unbound var and used separately to test instances'
+      )
+      t.ok(isList(list), 'typeRep.is() should correctly identify instances even when used as an unbound var')
+      t.notOk(isList(tpl), 'typeRep.is() should correctly not identify instances of other types even when used as an unbound var')
+      t.end()
+    })
+    t.test('typeRep.tag.is() is prebound to the tag', (t) => {
+      t.doesNotThrow(
+        () => { isNil(nilList) },
+        'typeRep.tag.is() can be assigned to an unbound var and used separately to test instances'
+      )
+      t.ok(isNil(nilList), 'typeRep.tag.is() should correctly identify instances even when used as an unbound var')
+      t.notOk(isNil(tpl), 'typeRep.tag.is() should correctly not identify instances of other types even when used as an unbound var')
+      t.end()
+    })
     t.end()
   })
   t.end()
