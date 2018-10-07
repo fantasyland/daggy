@@ -3,9 +3,47 @@
 [![Build Status](https://img.shields.io/travis/fantasyland/daggy/master.svg)](https://travis-ci.org/fantasyland/daggy)
 [![npm](https://img.shields.io/npm/v/daggy.svg)](https://www.npmjs.com/package/daggy)
 
-Library for creating tagged constructors a.k.a. "union types" or "sum types".
+Library for creating tagged constructors a.k.a. "disjoint union types" or "sum types".
 
-## `daggy.tagged(typeName, fields)`
+## Motivation
+
+JavaScript does not have first class support for sum types, but they can be imitated in a handful of different ways. Nevertheless, this imitation leads to excess boilerplate that can lead to extra work and the potential for errors:
+
+```javascript
+const successCase = { success: true, items: [1, 2, 3] }
+const failureCase = { success: false, error: 'There was a problem.' }
+
+function handleResult(result) {
+  if (result.success) {
+    console.log(result.message)
+  } else {
+    console.error(result.error)
+  }
+}
+```
+
+Daggy reduces the boilerplate needed to represent sum types in JavaScript:
+
+```javascript
+const Result = daggy.taggedSum('Result', {
+  Success: ['items'],
+  Failure: ['error']
+})
+
+const successCase = Result.Success([1, 2, 3])
+const failureCase = Result.Failure('There was a problem.')
+
+function handleResult(result) {
+  result.cata({
+    Success: message => console.log(message),
+    Failure: error => console.error(error)
+  })
+}
+```
+
+## API
+
+### `daggy.tagged(typeName, fields)`
 
 Creates a new constructor with the given field names
 
@@ -24,7 +62,7 @@ b.toString() // 'Point3D(2, 4, 6)'
 const c = Point3D.from({y: 2, x: 1, z: 3}) // { x: 1, y: 2, z: 3 }
 ```
 
-## `daggy.taggedSum(typeName, constructors)`
+### `daggy.taggedSum(typeName, constructors)`
 
 Returns Type Representative containing constructors of for each key in `constructors` as a property. Allows `{TypeRep}.is` and `{TypeRep}.{Tag}.is` checks for values created by constructors.
 
