@@ -15,7 +15,7 @@ const failureCase = { success: false, error: 'There was a problem.' }
 
 function handleResult(result) {
   if (result.success) {
-    console.log(result.message)
+    console.log(result.items)
   } else {
     console.error(result.error)
   }
