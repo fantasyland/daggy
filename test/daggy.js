@@ -110,7 +110,14 @@ test('taggedSum', (t) => {
   t.ok(List.prototype.isPrototypeOf(List.Nil), 'prototype chain is correct')
   t.test('build from object', (t) => {
     const list = List.Cons.from({xs: List.Nil, x: a})
-    t.ok(List.is(list), '`is` on type works')
+    const isList = List.is
+    const isCons = List.Cons.is
+    /* eslint-disable no-multi-spaces, space-in-parens */
+    t.strictSame(     List.is(list), true, '`is` on type works')
+    t.strictSame(      isList(list), true, '`is` on type works when unbound')
+    t.strictSame(List.Cons.is(list), true, '`is` on variant works')
+    t.strictSame(      isCons(list), true, '`is` on variant works when unbound')
+    /* eslint-enable no-multi-spaces, space-in-parens */
     t.same(list.x, a, 'head value of list works')
     t.same(list.xs, List.Nil, 'tail value of list works')
     t.throws(

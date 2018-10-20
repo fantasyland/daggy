@@ -63,7 +63,7 @@
       typeRep[tag][TAG] = tag;
       typeRep[tag][RET_TYPE] = typeName;
       typeRep[tag].toString = sum$ctrToString;
-      typeRep[tag].from = makeConstructorFromObject(fields, proto);
+      typeRep[tag].from = makeConstructorFromObject(fields, tagProto);
     });
     return typeRep;
   }
