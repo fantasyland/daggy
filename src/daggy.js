@@ -34,7 +34,7 @@
     var typeRep = makeConstructor(fields, proto);
     typeRep.toString = typeRepToString;
     typeRep.prototype = proto;
-    typeRep.is = isType;
+    typeRep.is = isType(typeName);
     typeRep.from = makeConstructorFromObject(fields, proto);
     typeRep[TYPE] = typeName;
     proto.constructor = typeRep;
@@ -46,7 +46,7 @@
     var typeRep = proto.constructor = {
       toString: typeRepToString,
       prototype: proto,
-      is: isType,
+      is: isType(typeName),
       '@@type': typeName
     };
     Object.keys(constructors).forEach(function(tag) {
@@ -55,11 +55,11 @@
       defProp(tagProto, TAG, tag);
       if (fields.length === 0) {
         typeRep[tag] = makeValue(fields, tagProto, [], 0);
-        typeRep[tag].is = sum$isUnit;
+        typeRep[tag].is = sum$isUnit(typeRep[tag]);
         return;
       }
       typeRep[tag] = makeConstructor(fields, tagProto);
-      typeRep[tag].is = sum$isVariant;
+      typeRep[tag].is = sum$isVariant(typeRep[tag]);
       typeRep[tag][TAG] = tag;
       typeRep[tag][RET_TYPE] = typeName;
       typeRep[tag].toString = sum$ctrToString;
@@ -93,20 +93,26 @@
     return this.constructor[TYPE] + arrToString(this[VALUES]);
   }
 
-  function sum$isVariant(val) {
-    return Boolean(val) &&
-      this[TAG] === val[TAG] &&
-      this[RET_TYPE] === type(val);
+  function sum$isVariant(variant) {
+    return function $sum$isVariant(val) {
+      return Boolean(val) &&
+        variant[TAG] === val[TAG] &&
+        variant[RET_TYPE] === type(val);
+    };
   }
 
-  function sum$isUnit(val) {
-    return this === val || Boolean(val) &&
-      this[TAG] === val[TAG] &&
-      type(this) === type(val);
+  function sum$isUnit(unit) {
+    return function $sum$isUnit(val) {
+      return unit === val || Boolean(val) &&
+        unit[TAG] === val[TAG] &&
+        type(unit) === type(val);
+    };
   }
 
-  function isType(val) {
-    return this[TYPE] === type(val);
+  function isType(typeName) {
+    return function $isType(val) {
+      return typeName === type(val);
+    };
   }
 
   function makeValue(fields, proto, values, argumentsLength) {
