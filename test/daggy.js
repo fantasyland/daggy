@@ -75,13 +75,23 @@ test('taggedSum', (t) => {
   )
   t.throws(
     () => { List.Nil.cata({}) },
-    new Error(`Constructors given to cata didn't include: Nil`),
+    new Error(`Constructors given to cata didn't include: Cons`),
     'throws if all cases are not handled'
   )
   t.throws(
     () => { list.cata({}) },
     new Error(`Constructors given to cata didn't include: Cons`),
     'throws if all cases are not handled'
+  )
+  t.throws(
+    () => { List.Nil.cata({ Nil: () => false }) },
+    new Error(`Constructors given to cata didn't include: Cons`),
+    'throws if some cases are not handled'
+  )
+  t.throws(
+    () => { list.cata({ Cons: () => true }) },
+    new Error(`Constructors given to cata didn't include: Nil`),
+    'throws if some cases are not handled'
   )
   t.same(list.toString(), `List.Cons(${toString(a)}, List.Nil)`, 'toString on value should work')
   t.same(List.toString(), 'List', 'toString on type should work')

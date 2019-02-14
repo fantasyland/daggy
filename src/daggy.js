@@ -27,6 +27,8 @@
   var TYPE = '@@type';
   // * `@@type` of variant constructor's returned results
   var RET_TYPE = '@@ret_type';
+  // * names of all variants of a sum type
+  var TAGS = '@@tags';
 
   function tagged(typeName, fields) {
     var proto = {toString: tagged$toString};
@@ -43,13 +45,15 @@
 
   function taggedSum(typeName, constructors) {
     var proto = {cata: sum$cata, toString: sum$toString};
+    var tags = Object.keys(constructors);
     var typeRep = proto.constructor = {
       toString: typeRepToString,
       prototype: proto,
       is: isType(typeName),
-      '@@type': typeName
+      '@@type': typeName,
+      '@@tags': tags
     };
-    Object.keys(constructors).forEach(function(tag) {
+    tags.forEach(function(tag) {
       var fields = constructors[tag];
       var tagProto = Object.create(proto);
       defProp(tagProto, TAG, tag);
@@ -69,11 +73,17 @@
   }
 
   function sum$cata(fs) {
-    var tag = this[TAG];
-    if (!fs[tag]) {
-      throw new TypeError("Constructors given to cata didn't include: " + tag);
+    var tags = this.constructor[TAGS];
+    var tag;
+    for (var idx = 0; idx < tags.length; idx += 1) {
+      tag = tags[idx];
+      if (!fs[tag]) {
+        throw new TypeError(
+          "Constructors given to cata didn't include: " + tag
+        );
+      }
     }
-    return fs[tag].apply(fs, this[VALUES]);
+    return fs[this[TAG]].apply(fs, this[VALUES]);
   }
 
   function sum$ctrToString() {

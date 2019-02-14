@@ -1,29 +1,31 @@
 // ┌────────────────────┬──────────────────────────────────────────────┬──────────────────────────────────────────────┬─────┐
 // │ name               │ Old                                          │ New                                          │ win │
 // ├────────────────────┼──────────────────────────────────────────────┼──────────────────────────────────────────────┼─────┤
-// │ make.taggedSum     │ 71,315 ops/sec ±3.48% (144 runs sampled)     │ 76,830 ops/sec ±3.07% (147 runs sampled)     │ New │
+// │ make.taggedSum     │ 125,547 ops/sec ±2.88% (144 runs sampled)    │ 126,888 ops/sec ±2.95% (140 runs sampled)    │ New │
 // ├────────────────────┼──────────────────────────────────────────────┼──────────────────────────────────────────────┼─────┤
-// │ make.tagged        │ 13,344,969 ops/sec ±0.55% (166 runs sampled) │ 573,216 ops/sec ±1.75% (153 runs sampled)    │ Old │
+// │ make.tagged        │ 903,920 ops/sec ±3.57% (153 runs sampled)    │ 889,371 ops/sec ±3.73% (152 runs sampled)    │ Old │
 // ├────────────────────┼──────────────────────────────────────────────┼──────────────────────────────────────────────┼─────┤
-// │ make.new.taggedSum │ 47,996 ops/sec ±2.90% (151 runs sampled)     │ 49,548 ops/sec ±2.61% (153 runs sampled)     │ New │
+// │ make.new.taggedSum │ 80,258 ops/sec ±1.97% (149 runs sampled)     │ 78,150 ops/sec ±2.15% (146 runs sampled)     │ Old │
 // ├────────────────────┼──────────────────────────────────────────────┼──────────────────────────────────────────────┼─────┤
-// │ make.new.tagged    │ 110,315 ops/sec ±3.12% (147 runs sampled)    │ 95,723 ops/sec ±2.49% (153 runs sampled)     │ Old │
+// │ make.new.tagged    │ 179,896 ops/sec ±2.60% (145 runs sampled)    │ 179,003 ops/sec ±2.21% (144 runs sampled)    │ Old │
 // ├────────────────────┼──────────────────────────────────────────────┼──────────────────────────────────────────────┼─────┤
-// │ new.taggedSum      │ 2,165,148 ops/sec ±0.80% (170 runs sampled)  │ 2,189,430 ops/sec ±0.71% (169 runs sampled)  │ New │
+// │ new.taggedSum      │ 2,488,771 ops/sec ±0.42% (170 runs sampled)  │ 2,246,936 ops/sec ±1.91% (162 runs sampled)  │ Old │
 // ├────────────────────┼──────────────────────────────────────────────┼──────────────────────────────────────────────┼─────┤
-// │ new.tagged         │ 2,195,517 ops/sec ±1.20% (167 runs sampled)  │ 2,307,572 ops/sec ±0.66% (170 runs sampled)  │ New │
+// │ new.tagged         │ 2,512,948 ops/sec ±0.50% (171 runs sampled)  │ 2,269,092 ops/sec ±2.42% (162 runs sampled)  │ Old │
 // ├────────────────────┼──────────────────────────────────────────────┼──────────────────────────────────────────────┼─────┤
-// │ toString.taggedSum │ 606,363 ops/sec ±0.58% (169 runs sampled)    │ 572,571 ops/sec ±0.71% (168 runs sampled)    │ Old │
+// │ toString.taggedSum │ 1,787,871 ops/sec ±0.38% (171 runs sampled)  │ 1,717,636 ops/sec ±0.43% (170 runs sampled)  │ Old │
 // ├────────────────────┼──────────────────────────────────────────────┼──────────────────────────────────────────────┼─────┤
-// │ toString.tagged    │ 412,286 ops/sec ±0.64% (168 runs sampled)    │ 406,783 ops/sec ±0.67% (165 runs sampled)    │ Old │
+// │ toString.tagged    │ 1,434,933 ops/sec ±0.68% (172 runs sampled)  │ 1,432,805 ops/sec ±0.28% (171 runs sampled)  │ New │
 // ├────────────────────┼──────────────────────────────────────────────┼──────────────────────────────────────────────┼─────┤
-// │ cata               │ 25,488,200 ops/sec ±0.57% (166 runs sampled) │ 26,720,785 ops/sec ±0.39% (170 runs sampled) │ New │
+// │ cata               │ 32,679,682 ops/sec ±0.37% (171 runs sampled) │ 13,896,988 ops/sec ±0.47% (170 runs sampled) │ Old │
 // ├────────────────────┼──────────────────────────────────────────────┼──────────────────────────────────────────────┼─────┤
-// │ instanceof.Sum     │ 16,274,027 ops/sec ±0.48% (168 runs sampled) │ 15,713,233 ops/sec ±0.39% (168 runs sampled) │ Old │
+// │ cata.giant         │ 12,877,269 ops/sec ±0.51% (170 runs sampled) │ 4,063,503 ops/sec ±0.45% (171 runs sampled)  │ Old │
 // ├────────────────────┼──────────────────────────────────────────────┼──────────────────────────────────────────────┼─────┤
-// │ instanceof.Sum.Tag │ 13,596,912 ops/sec ±0.57% (166 runs sampled) │ 10,909,542 ops/sec ±0.35% (168 runs sampled) │ Old │
+// │ instanceof.Sum     │ 13,899,352 ops/sec ±0.48% (170 runs sampled) │ 9,174,012 ops/sec ±0.31% (172 runs sampled)  │ Old │
 // ├────────────────────┼──────────────────────────────────────────────┼──────────────────────────────────────────────┼─────┤
-// │ instanceof.Type    │ 14,120,020 ops/sec ±0.79% (162 runs sampled) │ 14,414,014 ops/sec ±0.67% (165 runs sampled) │ New │
+// │ instanceof.Sum.Tag │ 8,666,474 ops/sec ±0.75% (168 runs sampled)  │ 8,824,885 ops/sec ±0.41% (171 runs sampled)  │ New │
+// ├────────────────────┼──────────────────────────────────────────────┼──────────────────────────────────────────────┼─────┤
+// │ instanceof.Type    │ 8,372,620 ops/sec ±0.49% (169 runs sampled)  │ 7,603,899 ops/sec ±0.45% (167 runs sampled)  │ Old │
 // └────────────────────┴──────────────────────────────────────────────┴──────────────────────────────────────────────┴─────┘
 require('./lib')({
   'make.taggedSum': {
@@ -61,6 +63,10 @@ require('./lib')({
   'cata': {
     Old: ({ list, pattern }) => list.cata(pattern),
     New: ({ list, pattern }) => list.cata(pattern)
+  },
+  'cata.giant': {
+    Old: ({ giant, giantPattern }) => giant.cata(giantPattern),
+    New: ({ giant, giantPattern }) => giant.cata(giantPattern)
   },
   'instanceof.Sum': {
     Old: ({ list, List }) => List.is(list),
