@@ -34,7 +34,7 @@ test('tagged', (t) => {
   t.same(tpl.constructor, Tuple, 'constructor on value should refer to TypeRep of the value')
   t.ok(Tuple.is(tpl), '`is` on type works')
   t.notOk(Tuple.is({}), '`is` on type works')
-  t.same(Tuple.prototype.foo, tpl.foo, 'values in typerep.prototype are accassible from instance values')
+  t.same(Tuple.prototype.foo, tpl.foo, 'values in typerep.prototype are accessible from instance values')
   t.ok(Tuple.prototype.isPrototypeOf(tpl), 'prototype chain is correct')
   t.test('build from object', (t) => {
     const tpl = Tuple.from({_2: b, _1: a})
@@ -114,8 +114,8 @@ test('taggedSum', (t) => {
   t.notOk(List.Cons.is(list.xs), '`is` on variant works')
   t.notOk(List.Nil.is(list), '`is` on unit value works')
   t.ok(List.Nil.is(list.xs), '`is` on unit value works')
-  t.same(List.prototype.foo, list.foo, 'values in typerep.prototype are accassible from instance values')
-  t.same(List.prototype.foo, List.Nil.foo, 'values in typerep.prototype are accassible from instance values')
+  t.same(List.prototype.foo, list.foo, 'values in typerep.prototype are accessible from instance values')
+  t.same(List.prototype.foo, List.Nil.foo, 'values in typerep.prototype are accessible from instance values')
   t.ok(List.prototype.isPrototypeOf(list), 'prototype chain is correct')
   t.ok(List.prototype.isPrototypeOf(List.Nil), 'prototype chain is correct')
   t.test('build from object', (t) => {
