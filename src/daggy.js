@@ -47,9 +47,9 @@
     var proto = {cata: sum$cata, toString: sum$toString};
     var tags = Object.keys(constructors);
     var typeRep = proto.constructor = {
-      toString: typeRepToString,
-      prototype: proto,
-      is: isType(typeName),
+      'toString': typeRepToString,
+      'prototype': proto,
+      'is': isType(typeName),
       '@@type': typeName,
       '@@tags': tags
     };
