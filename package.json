@@ -22,7 +22,7 @@
     "daggy": "1.3.0",
     "eslint": "4.9.x",
     "fantasy-combinators": "0.0.x",
-    "sanctuary-style": "1.1.x",
+    "sanctuary-style": "2.0.x",
     "standard": "8.6.0",
     "tap": "10.0.0",
     "xyz": "3.0.x"
