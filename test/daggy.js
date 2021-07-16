@@ -1,4 +1,4 @@
-const { toString } = require('sanctuary-type-classes')
+const show = require('sanctuary-show')
 const { test } = require('tap')
 const { tagged, taggedSum } = require('../src/daggy')
 
@@ -27,8 +27,10 @@ test('tagged', (t) => {
     new TypeError(`Expected 2 arguments, got 3`),
     'when creating a tagged type with too many arguments throws error'
   )
-  t.same(tpl.toString(), `Tuple(${toString(a)}, ${toString(b)})`, 'toString on value should work')
+  t.same(tpl.toString(), `Tuple(${show(a)}, ${show(b)})`, 'toString on value should work')
   t.same(Tuple.toString(), `Tuple`, 'toString on type should work')
+  t.same(show(tpl), `Tuple(${show(a)}, ${show(b)})`, 'show on tuple should work')
+  t.same(show(Tuple), `Tuple`, 'show on type should work')
   t.same(tpl._1, a, 'when checking _1 value should return correct value')
   t.same(tpl._2, b, 'when checking _2 value should return correct value')
   t.same(tpl.constructor, Tuple, 'constructor on value should refer to TypeRep of the value')
@@ -93,10 +95,14 @@ test('taggedSum', (t) => {
     new Error(`Constructors given to cata didn't include: Nil`),
     'throws if some cases are not handled'
   )
-  t.same(list.toString(), `List.Cons(${toString(a)}, List.Nil)`, 'toString on value should work')
+  t.same(list.toString(), `List.Cons(${show(a)}, List.Nil)`, 'toString on value should work')
   t.same(List.toString(), 'List', 'toString on type should work')
   t.same(List.Cons.toString(), 'List.Cons', 'toString on variant constructor should work')
   t.same(List.Nil.toString(), 'List.Nil', 'toString on unit variant should work')
+  t.same(show(list), `List.Cons(${show(a)}, List.Nil)`, 'show on list should work')
+  t.same(show(List), 'List', 'show on type should work')
+  t.same(show(List.Cons), 'List.Cons', 'show on variant constructor should work')
+  t.same(show(List.Nil), 'List.Nil', 'show on unit variant should work')
   t.same(list.x, a, 'when checking head value should return correct value')
   t.same(list.xs, List.Nil, 'when checking value value should return correct value')
   t.same(list.xs.constructor, List, 'constructor on value should refer to TypeRep of the value')
