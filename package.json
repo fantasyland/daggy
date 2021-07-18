@@ -12,7 +12,7 @@
   "license": "MIT",
   "readmeFilename": "README.md",
   "dependencies": {
-    "sanctuary-type-classes": "3.0.0",
+    "sanctuary-show": "2.0.0",
     "sanctuary-type-identifiers": "1.0.0"
   },
   "devDependencies": {
