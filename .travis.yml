@@ -3,7 +3,7 @@ language: node_js
 notifications:
   email: false
 node_js:
-  - '6'
+  - '14'
 install: npm install
 script:
   - npm run check
