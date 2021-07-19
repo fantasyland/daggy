@@ -20,15 +20,15 @@
     "cli-table": "0.3.1",
     "colors": "1.1.2",
     "daggy": "1.3.0",
-    "eslint": "5.15.x",
+    "eslint": "6.8.x",
     "fantasy-combinators": "0.0.x",
-    "sanctuary-style": "3.0.x",
+    "sanctuary-style": "4.0.x",
     "standard": "8.6.0",
     "tap": "10.0.0",
     "xyz": "3.0.x"
   },
   "scripts": {
-    "lint": "eslint --config node_modules/sanctuary-style/eslint-es3.json --env es3 --global define --global module --global require --global self -- src/daggy.js && standard bench/*.js test/*.js",
+    "lint": "eslint --config node_modules/sanctuary-style/eslint-es3.json --global define --global module --global require --global self -- src/daggy.js && standard bench/*.js test/*.js",
     "release": "xyz --repo git@github.com:fantasyland/daggy.git --increment",
     "test": "tap -R tap test/*.js",
     "check": "npm run lint && npm run test",
